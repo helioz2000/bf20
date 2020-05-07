@@ -1,0 +1,207 @@
+# #######################################
+#
+# HAL file for HostMot2 with 3 steppers
+#
+# Derived from Ted Hyde's original hm2-servo config
+#
+# Based up work and discussion with Seb & Peter & Jeff
+# GNU license references - insert here. www.linuxcnc.org
+#
+#
+# ########################################
+# Firmware files are in /lib/firmware/hm2/7i43/
+# Must symlink the hostmot2 firmware directory of sanbox to
+# /lib/firmware before running EMC2...
+# sudo ln -s $HOME/emc2-sandbox/src/hal/drivers/mesa-hostmot2/firmware /lib/firmware/hm2
+#
+# See also:
+# <http://www.linuxcnc.org/docs/devel/html/man/man9/hostmot2.9.html#config%20modparam>
+# and http://wiki.linuxcnc.org/cgi-bin/emcinfo.pl?HostMot2
+#
+# #####################################################################
+
+
+# ###################################
+# Core EMC/HAL Loads
+# ###################################
+
+# kinematics
+loadrt [KINS]KINEMATICS
+
+# motion controller, get name and thread periods from ini file
+loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
+# Note: Mesa cards do not use a base thread
+# base_period_nsec=[EMCMOT]BASE_PERIOD
+
+# hostmot2 driver
+loadrt hostmot2
+
+# load low-level driver
+loadrt [HOSTMOT2](DRIVER) config=[HOSTMOT2](CONFIG)
+
+# PID controller
+loadrt pid names=pid.x
+
+# ################################################
+# THREADS
+# ################################################
+
+addf hm2_[HOSTMOT2](BOARD).0.read         servo-thread
+addf hm2_[HOSTMOT2](BOARD).0.write        servo-thread
+addf motion-command-handler               servo-thread
+addf motion-controller                    servo-thread
+addf pid.x.do-pid-calcs                   servo-thread
+
+# ######################################################
+# Axis-of-motion Specific Configs (not the GUI)
+# ######################################################
+
+
+# ################
+# X [0] Axis
+# ################
+
+# PID setup
+setp pid.x.Pgain     [JOINT_0]P
+setp pid.x.Igain     [JOINT_0]I
+setp pid.x.Dgain     [JOINT_0]D
+setp pid.x.bias      [JOINT_0]BIAS
+setp pid.x.FF0       [JOINT_0]FF0
+setp pid.x.FF1       [JOINT_0]FF1
+setp pid.x.FF2       [JOINT_0]FF2
+setp pid.x.FF3       [JOINT_0]FF3
+setp pid.x.deadband  [JOINT_0]DEADBAND
+setp pid.x.maxoutput [JOINT_0]MAX_OUTPUT
+
+# axis enable chain
+newsig emcmot.00.enable bit
+sets emcmot.00.enable FALSE
+
+net emcmot.00.enable <= joint.0.amp-enable-out 
+net emcmot.00.enable => hm2_[HOSTMOT2](BOARD).0.stepgen.00.enable
+
+
+# Config without encoder
+# position command to stepgen
+#net emcmot.00.pos-cmd <= joint.0.motor-pos-cmd
+#net emcmot.00.pos-cmd => hm2_[HOSTMOT2](BOARD).0.stepgen.00.position-cmd
+# position feedback from stepgen
+#net motor.00.pos-fb <= hm2_[HOSTMOT2](BOARD).0.stepgen.00.position-fb
+#net motor.00.pos-fb => joint.0.motor-pos-fb
+# position control mode
+#setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.control-type    0
+
+
+# Config with encoder+pid
+# pid controller enable 
+net emcmot.00.enable => pid.x.enable
+#net pid.x.enable <= joint.0.amp-enable-out => hm2_[HOSTMOT2](BOARD).0.stepgen.00.enable
+# index enable for homing
+net x_index_enable <= joint.0.index-enable
+net x_index_enable => pid.x.index-enable
+net x_index_enable => hm2_[HOSTMOT2](BOARD).0.encoder.00.index-enable
+#net pid.x.index-enable <= joint.0.index-enable => hm2_[HOSTMOT2](BOARD).0.encoder.00.index-enable
+# pid output to drive stepgen
+net x_pid_output <= pid.x.output => hm2_[HOSTMOT2](BOARD).0.stepgen.00.velocity-cmd
+# pid velocity feedback
+net x_velocity_feedback <= hm2_[HOSTMOT2](BOARD).0.encoder.00.velocity
+net x_velocity_feedback => pid.x.feedback-deriv
+# position command to pid
+net x_pos_command <= joint.0.motor-pos-cmd => pid.x.command
+# positon feedback from encoder
+net x_pos_feedback <= hm2_[HOSTMOT2](BOARD).0.encoder.00.position
+net x_pos_feedback => pid.x.feedback
+net x_pos_feedback => joint.0.motor-pos-fb
+# velocity control mode
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.control-type    1
+
+
+# stepgen setup
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.dirsetup        [JOINT_0]DIRSETUP
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.dirhold         [JOINT_0]DIRHOLD
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.steplen         [JOINT_0]STEPLEN
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.stepspace       [JOINT_0]STEPSPACE
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.position-scale  [JOINT_0]SCALE
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.maxvel          [JOINT_0]STEPGEN_MAX_VEL
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.maxaccel        [JOINT_0]STEPGEN_MAX_ACC
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.step_type       0
+
+# Encoder
+setp hm2_[HOSTMOT2](BOARD).0.encoder.00.counter-mode 0
+setp hm2_[HOSTMOT2](BOARD).0.encoder.00.filter       1
+#setp hm2_[HOSTMOT2](BOARD).0.encoder.00.index_invert 0
+#setp hm2_[HOSTMOT2](BOARD).0.encoder.00.index_mask   0
+#setp hm2_[HOSTMOT2](BOARD).0.encoder.00.index_mask_invert 0
+setp hm2_[HOSTMOT2](BOARD).0.encoder.00.scale        [JOINT_0]ENCODER_SCALE
+
+# ################
+# Y [1] Axis
+# ################
+
+# axis enable chain
+newsig emcmot.01.enable bit
+sets emcmot.01.enable FALSE
+
+net emcmot.01.enable <= joint.1.amp-enable-out 
+net emcmot.01.enable => hm2_[HOSTMOT2](BOARD).0.stepgen.01.enable
+
+
+# position command and feedback
+net emcmot.01.pos-cmd <= joint.1.motor-pos-cmd
+net emcmot.01.pos-cmd => hm2_[HOSTMOT2](BOARD).0.stepgen.01.position-cmd
+
+net motor.01.pos-fb <= hm2_[HOSTMOT2](BOARD).0.stepgen.01.position-fb
+net motor.01.pos-fb => joint.1.motor-pos-fb
+
+
+# timing parameters
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.dirsetup        [JOINT_1]DIRSETUP
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.dirhold         [JOINT_1]DIRHOLD
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.steplen         [JOINT_1]STEPLEN
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.stepspace       [JOINT_1]STEPSPACE
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.position-scale  [JOINT_1]SCALE
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.maxvel          [JOINT_1]STEPGEN_MAX_VEL
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.maxaccel        [JOINT_1]STEPGEN_MAX_ACC
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.step_type       0
+
+
+# ################
+# Z [2] Axis
+# ################
+
+# axis enable chain
+newsig emcmot.02.enable bit
+sets emcmot.02.enable FALSE
+
+net emcmot.02.enable <= joint.2.amp-enable-out 
+net emcmot.02.enable => hm2_[HOSTMOT2](BOARD).0.stepgen.02.enable
+
+# position command and feedback
+net emcmot.02.pos-cmd <= joint.2.motor-pos-cmd
+net emcmot.02.pos-cmd => hm2_[HOSTMOT2](BOARD).0.stepgen.02.position-cmd
+
+net motor.02.pos-fb <= hm2_[HOSTMOT2](BOARD).0.stepgen.02.position-fb
+net motor.02.pos-fb => joint.2.motor-pos-fb
+
+# timing parameters
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.dirsetup        [JOINT_2]DIRSETUP
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.dirhold         [JOINT_2]DIRHOLD
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.steplen         [JOINT_2]STEPLEN
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.stepspace       [JOINT_2]STEPSPACE
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.position-scale  [JOINT_2]SCALE
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.maxvel          [JOINT_2]STEPGEN_MAX_VEL
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.maxaccel        [JOINT_2]STEPGEN_MAX_ACC
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.step_type       0
+

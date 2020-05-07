@@ -1,0 +1,13 @@
+(Operator interface test)
+(Erwin Bejsta - May 2020)
+(interface has one indicator and one button)
+
+M64 P0 (indicator light on, Q2)
+(MSG, Please press button)
+M66 P0 L3 Q180 (Wait 3 min for user to press button)
+O105 IF [ #5399 ne 1] (True in case of timeout without button)
+ (debug, Timeout while waiting for button)
+ M0 (Pause program)
+ O105 ENDIF
+M65 P0 (indicator light off, Q2)
+M2 (end)

@@ -1,0 +1,18 @@
+# bf20_postgui.hal
+
+# Some of the signals defined in the gui 
+# are not available until the gui has loaded.
+# Put any gui related hal configuration in this
+# file.
+
+# connect the test button from pyvcp
+# to an actual output pin
+
+#net pyvcptest pyvcp.test => hm2_[HOSTMOT2](BOARD).0.gpio.029.out
+#net output03 <= pyvcp.q1-3-test
+
+# Probe input signals
+net input04 => pyvcp.probe1-signal
+net input05 => pyvcp.probe2-signal
+net input06 => pyvcp.operator-button
+net input00_not => pyvcp.bf20-estop

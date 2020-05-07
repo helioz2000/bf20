@@ -1,0 +1,18 @@
+# This is a Python file using Tkinter library calls
+# to customise the LinuxCNC GUI. As per the setting in the INI file, put this at $HOME/.axisrc
+
+# remove "run" command from "r" key
+root_window.unbind("r")
+
+# disable feed override
+#for key in range(10):
+#  root_window.unbind("%s" % key)
+
+# disable axis selection key
+#root_window.unbind("'")
+
+# make full screen
+root_window.attributes('-fullscreen', True)
+
+# disable linuxcnc quit dialog
+root_window.tk.call("wm","protocol",".","WM_DELETE_WINDOW","destroy .")

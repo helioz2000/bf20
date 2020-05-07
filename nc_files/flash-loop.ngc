@@ -1,0 +1,14 @@
+(flash-loop)
+( 0.5 sec flash on user output 0)
+(Erwin Bejsta - April 2020)
+
+(G0 X0 Y0)
+#1 = 0 (loop counter)
+o101 while [#1 LT 50]
+  M64 P0 (user output on)
+  G4 P0.25 (pause)
+  M65 P0 (user output off)
+  G4 P0.25 (pause)
+  #1 = [#1+1]
+o101 endwhile
+M2 (end)

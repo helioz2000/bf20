@@ -1,0 +1,206 @@
+# #######################################
+#
+# HAL file for In/Outputs 
+# Erwin Bejsta - April 2020
+#
+# ########################################
+
+
+# ###################################
+# Core HAL Loads
+# ###################################
+
+# load estop latch component
+loadrt estop_latch count=2
+
+# ################################################
+# THREADS
+# ################################################
+
+addf estop-latch.0                servo-thread       
+addf estop-latch.1                servo-thread
+
+# ##################################################
+# GPIO Configuration
+# ##################################################
+# configures the gpio on the FPGA chip, functionality depends on the daughter board
+# each pin has the following parameters:
+# is_output = set to 0 to make gpio and input
+# invert_output = set to 1 to invert output logic
+# is_opendrain = 1: drive low, float high 0: drive low and drive high
+#
+# When a logical output is 1 in open-drain mode, the FPGA lets the pin
+# float and it gets pulled high to +5V via a 10K resistor.
+#
+# When a logical output is 1 in push/pull mode, the FPGA pushes the pin
+# high but only to +3.3V.  This is problematic on some kinds of inputs.
+#
+
+# P1 assigned to 7i85S daughter board
+# P2 GPIO pins 19-35
+# P7 GPIO pins 38-54
+
+# set gpio for connected IO modules
+# Note: input is the default mode
+
+# Module 1 - 6ES5 431-8MA11 (8xDI 24VDC isolated)
+# set as inputs
+setp hm2_[HOSTMOT2](BOARD).0.gpio.019.is_output 0
+setp hm2_[HOSTMOT2](BOARD).0.gpio.020.is_output 0
+setp hm2_[HOSTMOT2](BOARD).0.gpio.021.is_output 0
+setp hm2_[HOSTMOT2](BOARD).0.gpio.022.is_output 0
+setp hm2_[HOSTMOT2](BOARD).0.gpio.023.is_output 0
+setp hm2_[HOSTMOT2](BOARD).0.gpio.024.is_output 0
+setp hm2_[HOSTMOT2](BOARD).0.gpio.025.is_output 0
+setp hm2_[HOSTMOT2](BOARD).0.gpio.026.is_output 0
+
+# Module 2 - 6ES7 441-8MA31 (8xDQ 24DC)
+# set as outputs
+setp hm2_[HOSTMOT2](BOARD).0.gpio.027.is_output 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.027.is_opendrain 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.027.invert_output 1
+
+setp hm2_[HOSTMOT2](BOARD).0.gpio.028.is_output 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.028.is_opendrain 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.028.invert_output 1
+
+setp hm2_[HOSTMOT2](BOARD).0.gpio.029.is_output 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.029.is_opendrain 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.029.invert_output 1
+
+setp hm2_[HOSTMOT2](BOARD).0.gpio.030.is_output 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.030.is_opendrain 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.030.invert_output 1
+
+setp hm2_[HOSTMOT2](BOARD).0.gpio.031.is_output 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.031.is_opendrain 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.031.invert_output 1
+
+setp hm2_[HOSTMOT2](BOARD).0.gpio.032.is_output 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.032.is_opendrain 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.032.invert_output 1
+
+setp hm2_[HOSTMOT2](BOARD).0.gpio.033.is_output 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.033.is_opendrain 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.033.invert_output 1
+
+setp hm2_[HOSTMOT2](BOARD).0.gpio.034.is_output 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.034.is_opendrain 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.034.invert_output 1
+
+# ##################################################
+# IO module signals
+# ##################################################
+
+net input00 <= hm2_[HOSTMOT2](BOARD).0.gpio.019.in
+net input00_not <= hm2_[HOSTMOT2](BOARD).0.gpio.019.in_not
+net input01 <= hm2_[HOSTMOT2](BOARD).0.gpio.020.in
+net input01_not <= hm2_[HOSTMOT2](BOARD).0.gpio.020.in_not
+net input02 <= hm2_[HOSTMOT2](BOARD).0.gpio.021.in
+net input02_not <= hm2_[HOSTMOT2](BOARD).0.gpio.021.in_not
+net input03 <= hm2_[HOSTMOT2](BOARD).0.gpio.022.in
+net input03_not <= hm2_[HOSTMOT2](BOARD).0.gpio.022.in_not
+net input04 <= hm2_[HOSTMOT2](BOARD).0.gpio.023.in
+net input04_not <= hm2_[HOSTMOT2](BOARD).0.gpio.023.in_not
+net input05 <= hm2_[HOSTMOT2](BOARD).0.gpio.024.in
+net input05_not <= hm2_[HOSTMOT2](BOARD).0.gpio.024.in_not
+net input06 <= hm2_[HOSTMOT2](BOARD).0.gpio.025.in
+net input06_not <= hm2_[HOSTMOT2](BOARD).0.gpio.025.in_not
+net input07 <= hm2_[HOSTMOT2](BOARD).0.gpio.026.in
+net input07_not <= hm2_[HOSTMOT2](BOARD).0.gpio.026.in_not
+
+# create nets for outputs:
+
+#net output00 => hm2_[HOSTMOT2](BOARD).0.gpio.027.out
+net estop-latch1-out => hm2_[HOSTMOT2](BOARD).0.gpio.027.out
+net output01 => hm2_[HOSTMOT2](BOARD).0.gpio.028.out
+net output02 => hm2_[HOSTMOT2](BOARD).0.gpio.029.out
+net output03 => hm2_[HOSTMOT2](BOARD).0.gpio.030.out
+net output04 => hm2_[HOSTMOT2](BOARD).0.gpio.031.out
+net output05 => hm2_[HOSTMOT2](BOARD).0.gpio.032.out
+net output06 => hm2_[HOSTMOT2](BOARD).0.gpio.033.out
+net output07 => hm2_[HOSTMOT2](BOARD).0.gpio.034.out
+
+# ##################################################
+# Digital Inputs
+# ##################################################
+
+# estop input
+net input00_not => estop-latch.1.fault-in
+
+# homing proximity inputs
+net input01_not => joint.0.home-sw-in
+net input02_not => joint.1.home-sw-in
+net input03_not => joint.2.home-sw-in
+
+# touch probe input
+net input04 => motion.probe-input
+
+# Unused input
+#net input05 =>
+
+# M66 user input signal ( button )
+net input06 => motion.digital-in-00
+# deliberate startup fail:
+#net input07 => motion.digital-in-00
+
+# Unused input
+#net input07 =>
+
+# #################################################
+# Digital Outputs
+# #################################################
+
+# output00 .... estop relay feedback to BF20 control panel
+
+# Signal "Machine is on" - Enable stepper drives
+net output01 <= halui.machine.is-on
+
+# M63-M64 user output (Indicator light)
+net output02 <= motion.digital-out-00
+
+# Unused Outputs
+#net output03 <=
+#net output04 <= motion.digital-out-03
+#net output05 <= motion.digital-out-02
+#net output06 <= motion.digital-out-01
+#net output07 <=
+
+# ##################################################
+# EStop chain
+# ##################################################
+
+# define the estop fault triggers
+net watchdog hm2_[HOSTMOT2](BOARD).0.watchdog.has_bit => estop-latch.0.fault-in
+# estop-latch.1.fault-in ..... coming from input00 ..... see above
+
+# link the two estop latches (in series)
+net estop-latch0-out estop-latch.0.ok-out => estop-latch.1.ok-in
+# link output to enable emc control
+net estop-latch1-out estop-latch.1.ok-out => iocontrol.0.emc-enable-in
+
+# estop reset request
+net latch-reset iocontrol.0.user-request-enable
+net latch-reset => estop-latch.0.reset
+net latch-reset => estop-latch.1.reset
+
+# ##################################################
+# Standard I/O Block
+# ##################################################
+
+# A basic estop loop that only includes the hostmot watchdog.
+#net user-enable iocontrol.0.user-request-enable => estop-latch.0.reset
+#net watchdog hm2_[HOSTMOT2](BOARD).0.watchdog.has_bit => estop-latch.0.fault-in
+
+# create signals for tool loading loopback
+net tool-prep-loop iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
+net tool-change-loop iocontrol.0.tool-change => iocontrol.0.tool-changed
+
+# ##################################################
+# User LED's on the FPGA board
+# ##################################################
+
+#net emcmot.00.enable => hm2_[HOSTMOT2](BOARD).0.led.CR01
+#net emcmot.01.enable => hm2_[HOSTMOT2](BOARD).0.led.CR02
+#net emcmot.02.enable => hm2_[HOSTMOT2](BOARD).0.led.CR03
+#net Input.0.0 => hm2_[HOSTMOT2](BOARD).0.led.CR04

@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<pyvcp>
+  <labelframe text="E/Stop">
+    <font>("Arial",10)</font>
+    <led>
+      <halpin>"bf20-estop"</halpin>
+      <size>20</size>
+      <on_color>"red"</on_color>
+      <off_color>"green"</off_color>
+    </led>
+  </labelframe>
+  <labelframe text="Probe1">
+    <font>("Arial",10)</font>
+    <led>
+      <halpin>"probe1-signal"</halpin>
+      <size>20</size>
+      <on_color>"yellow"</on_color>
+      <off_color>"red"</off_color>
+    </led>
+  </labelframe>
+  <labelframe text="Probe2">
+    <font>("Arial",10)</font>
+    <led>
+      <halpin>"probe2-signal"</halpin>
+      <size>20</size>
+      <on_color>"yellow"</on_color>
+      <off_color>"red"</off_color>
+    </led>
+  </labelframe>
+  <labelframe text="Operator">
+    <font>("Arial",10)</font>
+    <led>
+      <halpin>"operator-button"</halpin>
+      <size>20</size>
+      <on_color>"green"</on_color>
+      <off_color>"black"</off_color>
+    </led>
+  </labelframe>
+</pyvcp>

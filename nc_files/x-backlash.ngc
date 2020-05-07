@@ -1,0 +1,14 @@
+(X-axis backlash test program)
+(Erwin Bejsta May 2020)
+
+G21    (use mm)
+G0 X50
+G4 P0.5
+G0 X60
+G4 P0.3
+G0 X50
+G4 P2
+G0 X40
+G4 P0.3
+G0 X50
+M2 ( end )

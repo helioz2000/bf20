@@ -1,0 +1,10 @@
+(IO test)
+(Erwin Bejsta - April 2020)
+
+M64 P0 (Q1.7 on)
+(G1 F500 X10)
+G4 P3
+M65 P0 (Q1.7 off)
+(G1 X0)
+G4 P3
+M2 (end)

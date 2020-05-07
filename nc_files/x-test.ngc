@@ -1,0 +1,27 @@
+(X-axis test program)
+(Erwin Bejsta April 2020)
+
+G21    (use mm)
+G0 X0 Z50
+M64 P0 (Q07 On)
+;M66 P0 L3 Q10 (Wait for user input 0)
+G1 F500 X20
+M65 P0 (Q07 Off)
+G4 P2
+G0 X100
+G4 P1
+G0 X150
+G4 P0.5
+G0 X100
+G4 P1.5
+G1 F800 X80
+G4 P1
+G1 F1000 X60
+G4 P1
+G1 F200 X45
+G1 F100 X35
+G4 P0.5
+G1 F10 X30
+G4 P1
+G0 X0
+M2 ( end )
