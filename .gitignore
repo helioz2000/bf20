@@ -5,6 +5,7 @@ mesa
 git.txt
 .linuxcnc*
 *.bak
+*.png
 *.save
 .axis*
 .xsession*

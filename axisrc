@@ -12,7 +12,7 @@ root_window.unbind("r")
 #root_window.unbind("'")
 
 # make full screen
-root_window.attributes('-fullscreen', True)
+#root_window.attributes('-fullscreen', True)
 
 # disable linuxcnc quit dialog
 root_window.tk.call("wm","protocol",".","WM_DELETE_WINDOW","destroy .")
