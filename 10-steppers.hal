@@ -40,7 +40,7 @@ loadrt hostmot2
 loadrt [HOSTMOT2](DRIVER) config=[HOSTMOT2](CONFIG)
 
 # PID controller
-loadrt pid names=pid.x
+loadrt pid names=pid.x,pid.y
 
 # ################################################
 # THREADS
@@ -51,6 +51,7 @@ addf hm2_[HOSTMOT2](BOARD).0.write        servo-thread
 addf motion-command-handler               servo-thread
 addf motion-controller                    servo-thread
 addf pid.x.do-pid-calcs                   servo-thread
+addf pid.y.do-pid-calcs                   servo-thread
 
 # ######################################################
 # Axis-of-motion Specific Configs (not the GUI)
@@ -95,12 +96,10 @@ net emcmot.00.enable => hm2_[HOSTMOT2](BOARD).0.stepgen.00.enable
 # Config with encoder+pid
 # pid controller enable 
 net emcmot.00.enable => pid.x.enable
-#net pid.x.enable <= joint.0.amp-enable-out => hm2_[HOSTMOT2](BOARD).0.stepgen.00.enable
 # index enable for homing
 net x_index_enable <= joint.0.index-enable
 net x_index_enable => pid.x.index-enable
 net x_index_enable => hm2_[HOSTMOT2](BOARD).0.encoder.00.index-enable
-#net pid.x.index-enable <= joint.0.index-enable => hm2_[HOSTMOT2](BOARD).0.encoder.00.index-enable
 # pid output to drive stepgen
 net x_pid_output <= pid.x.output => hm2_[HOSTMOT2](BOARD).0.stepgen.00.velocity-cmd
 # pid velocity feedback
@@ -133,14 +132,23 @@ setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.step_type       0
 # Encoder
 setp hm2_[HOSTMOT2](BOARD).0.encoder.00.counter-mode 0
 setp hm2_[HOSTMOT2](BOARD).0.encoder.00.filter       1
-#setp hm2_[HOSTMOT2](BOARD).0.encoder.00.index_invert 0
-#setp hm2_[HOSTMOT2](BOARD).0.encoder.00.index_mask   0
-#setp hm2_[HOSTMOT2](BOARD).0.encoder.00.index_mask_invert 0
 setp hm2_[HOSTMOT2](BOARD).0.encoder.00.scale        [JOINT_0]ENCODER_SCALE
 
 # ################
 # Y [1] Axis
 # ################
+
+# PID setup
+setp pid.y.Pgain     [JOINT_1]P
+setp pid.y.Igain     [JOINT_1]I
+setp pid.y.Dgain     [JOINT_1]D
+setp pid.y.bias      [JOINT_1]BIAS
+setp pid.y.FF0       [JOINT_1]FF0
+setp pid.y.FF1       [JOINT_1]FF1
+setp pid.y.FF2       [JOINT_1]FF2
+setp pid.y.FF3       [JOINT_1]FF3
+setp pid.y.deadband  [JOINT_1]DEADBAND
+setp pid.y.maxoutput [JOINT_1]MAX_OUTPUT
 
 # axis enable chain
 newsig emcmot.01.enable bit
@@ -149,16 +157,38 @@ sets emcmot.01.enable FALSE
 net emcmot.01.enable <= joint.1.amp-enable-out 
 net emcmot.01.enable => hm2_[HOSTMOT2](BOARD).0.stepgen.01.enable
 
+# Config without encoder
+# position command joint->stepgen
+#net emcmot.01.pos-cmd <= joint.1.motor-pos-cmd
+#net emcmot.01.pos-cmd => hm2_[HOSTMOT2](BOARD).0.stepgen.01.position-cmd
+# position feedback stepgen->joint
+#net motor.01.pos-fb <= hm2_[HOSTMOT2](BOARD).0.stepgen.01.position-fb
+#net motor.01.pos-fb => joint.1.motor-pos-fb
+# stepgen control mode "position"
+#setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.control-type    0
 
-# position command and feedback
-net emcmot.01.pos-cmd <= joint.1.motor-pos-cmd
-net emcmot.01.pos-cmd => hm2_[HOSTMOT2](BOARD).0.stepgen.01.position-cmd
+# Config with encoder+pid
+# pid controller enable
+net emcmot.01.enable => pid.y.enable
+# index enable for homing
+net y_index_enable <= joint.1.index-enable
+net y_index_enable => pid.y.index-enable
+net y_index_enable => hm2_[HOSTMOT2](BOARD).0.encoder.01.index-enable
+# pid output to drive stepgen
+net y_pid_output <= pid.y.output => hm2_[HOSTMOT2](BOARD).0.stepgen.01.velocity-cmd
+# pid velocity feedback
+net y_velocity_feedback <= hm2_[HOSTMOT2](BOARD).0.encoder.01.velocity
+net y_velocity_feedback => pid.y.feedback-deriv
+# position command to pid
+net y_pos_command <= joint.1.motor-pos-cmd => pid.y.command
+# positon feedback from encoder
+net y_pos_feedback <= hm2_[HOSTMOT2](BOARD).0.encoder.01.position
+net y_pos_feedback => pid.y.feedback
+net y_pos_feedback => joint.1.motor-pos-fb
+# stepgen control mode "velocity"
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.control-type    1
 
-net motor.01.pos-fb <= hm2_[HOSTMOT2](BOARD).0.stepgen.01.position-fb
-net motor.01.pos-fb => joint.1.motor-pos-fb
-
-
-# timing parameters
+# stepgen setup
 setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.dirsetup        [JOINT_1]DIRSETUP
 setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.dirhold         [JOINT_1]DIRHOLD
 
@@ -172,6 +202,10 @@ setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.maxaccel        [JOINT_1]STEPGEN_MAX_ACC
 
 setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.step_type       0
 
+# Encoder
+setp hm2_[HOSTMOT2](BOARD).0.encoder.01.counter-mode 0
+setp hm2_[HOSTMOT2](BOARD).0.encoder.01.filter       1
+setp hm2_[HOSTMOT2](BOARD).0.encoder.01.scale        [JOINT_1]ENCODER_SCALE
 
 # ################
 # Z [2] Axis
