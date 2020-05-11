@@ -40,7 +40,7 @@ loadrt hostmot2
 loadrt [HOSTMOT2](DRIVER) config=[HOSTMOT2](CONFIG)
 
 # PID controller
-loadrt pid names=pid.x,pid.y
+loadrt pid names=pid.x,pid.y,pid.z
 
 # ################################################
 # THREADS
@@ -52,6 +52,7 @@ addf motion-command-handler               servo-thread
 addf motion-controller                    servo-thread
 addf pid.x.do-pid-calcs                   servo-thread
 addf pid.y.do-pid-calcs                   servo-thread
+addf pid.z.do-pid-calcs                   servo-thread
 
 # ######################################################
 # Axis-of-motion Specific Configs (not the GUI)
@@ -75,9 +76,8 @@ setp pid.x.deadband  [JOINT_0]DEADBAND
 setp pid.x.maxoutput [JOINT_0]MAX_OUTPUT
 
 # axis enable chain
-newsig emcmot.00.enable bit
-sets emcmot.00.enable FALSE
-
+#newsig emcmot.00.enable bit
+#sets emcmot.00.enable FALSE
 net emcmot.00.enable <= joint.0.amp-enable-out 
 net emcmot.00.enable => hm2_[HOSTMOT2](BOARD).0.stepgen.00.enable
 
@@ -151,9 +151,6 @@ setp pid.y.deadband  [JOINT_1]DEADBAND
 setp pid.y.maxoutput [JOINT_1]MAX_OUTPUT
 
 # axis enable chain
-newsig emcmot.01.enable bit
-sets emcmot.01.enable FALSE
-
 net emcmot.01.enable <= joint.1.amp-enable-out 
 net emcmot.01.enable => hm2_[HOSTMOT2](BOARD).0.stepgen.01.enable
 
@@ -212,20 +209,41 @@ setp hm2_[HOSTMOT2](BOARD).0.encoder.01.scale        [JOINT_1]ENCODER_SCALE
 # ################
 
 # axis enable chain
-newsig emcmot.02.enable bit
-sets emcmot.02.enable FALSE
-
 net emcmot.02.enable <= joint.2.amp-enable-out 
 net emcmot.02.enable => hm2_[HOSTMOT2](BOARD).0.stepgen.02.enable
 
-# position command and feedback
-net emcmot.02.pos-cmd <= joint.2.motor-pos-cmd
-net emcmot.02.pos-cmd => hm2_[HOSTMOT2](BOARD).0.stepgen.02.position-cmd
+# Config without encoder
+# stepgen control mode "position"
+#setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.control-type    0
+# position command joint->stepgen
+#net emcmot.02.pos-cmd <= joint.2.motor-pos-cmd
+#net emcmot.02.pos-cmd => hm2_[HOSTMOT2](BOARD).0.stepgen.02.position-cmd
+# position feedback stepgen->joint
+#net motor.02.pos-fb <= hm2_[HOSTMOT2](BOARD).0.stepgen.02.position-fb
+#net motor.02.pos-fb => joint.2.motor-pos-fb
 
-net motor.02.pos-fb <= hm2_[HOSTMOT2](BOARD).0.stepgen.02.position-fb
-net motor.02.pos-fb => joint.2.motor-pos-fb
+# Config with encoder+pid
+# stepgen control mode "velocity"
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.control-type    1
+# pid controller enable
+net emcmot.02.enable => pid.z.enable
+# index enable for homing
+net z_index_enable <= joint.2.index-enable
+net z_index_enable => pid.z.index-enable
+net z_index_enable => hm2_[HOSTMOT2](BOARD).0.encoder.02.index-enable
+# pid output to drive stepgen
+net z_pid_output <= pid.z.output => hm2_[HOSTMOT2](BOARD).0.stepgen.02.velocity-cmd
+# pid velocity feedback
+net z_velocity_feedback <= hm2_[HOSTMOT2](BOARD).0.encoder.02.velocity
+net z_velocity_feedback => pid.z.feedback-deriv
+# position command to pid
+net z_pos_command <= joint.2.motor-pos-cmd => pid.z.command
+# positon feedback from encoder
+net z_pos_feedback <= hm2_[HOSTMOT2](BOARD).0.encoder.02.position
+net z_pos_feedback => pid.z.feedback
+net z_pos_feedback => joint.2.motor-pos-fb
 
-# timing parameters
+# stepgen setup
 setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.dirsetup        [JOINT_2]DIRSETUP
 setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.dirhold         [JOINT_2]DIRHOLD
 
@@ -238,4 +256,21 @@ setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.maxvel          [JOINT_2]STEPGEN_MAX_VEL
 setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.maxaccel        [JOINT_2]STEPGEN_MAX_ACC
 
 setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.step_type       0
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.direction.invert_output   1
 
+# Encoder setup
+setp hm2_[HOSTMOT2](BOARD).0.encoder.02.counter-mode    0
+setp hm2_[HOSTMOT2](BOARD).0.encoder.02.filter      1
+setp hm2_[HOSTMOT2](BOARD).0.encoder.02.scale           [JOINT_2]ENCODER_SCALE
+
+# PID setup
+setp pid.z.Pgain     [JOINT_2]P
+setp pid.z.Igain     [JOINT_2]I
+setp pid.z.Dgain     [JOINT_2]D
+setp pid.z.bias      [JOINT_2]BIAS
+setp pid.z.FF0       [JOINT_2]FF0
+setp pid.z.FF1       [JOINT_2]FF1
+setp pid.z.FF2       [JOINT_2]FF2
+setp pid.z.FF3       [JOINT_2]FF3
+setp pid.z.deadband  [JOINT_2]DEADBAND
+setp pid.z.maxoutput [JOINT_2]MAX_OUTPUT
