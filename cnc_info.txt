@@ -1,0 +1,14 @@
+Information on machine configuration
+
+G54 - same as absolute, 0 offset on all axis
+G55 - non specific WCS, use for working
+G56 - X+Y position of Mill Vice, Z to be set to tool
+G59 - non specific WCS, use for working
+
+M64/M65
+  P0 = indicator light on operator module
+
+M66
+  P0 = button on operator module
+
+
