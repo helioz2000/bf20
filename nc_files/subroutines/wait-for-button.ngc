@@ -1,5 +1,6 @@
+(filename wait-for-button.ngc)
+(Erwin Bejsta - May 2020)
 o<wait-for-button> sub
-  (Erwin Bejsta - May 2020)
   (indicator on, wait for button)
   (on timeout pause the program)
 
