@@ -113,7 +113,7 @@ net input07_not <= hm2_[HOSTMOT2](BOARD).0.gpio.026.in_not
 
 #net output00 => hm2_[HOSTMOT2](BOARD).0.gpio.027.out
 net estop-latch1-out => hm2_[HOSTMOT2](BOARD).0.gpio.027.out
-net output01 => hm2_[HOSTMOT2](BOARD).0.gpio.028.out
+net common.machine.is-on => hm2_[HOSTMOT2](BOARD).0.gpio.028.out
 net output02 => hm2_[HOSTMOT2](BOARD).0.gpio.029.out
 net output03 => hm2_[HOSTMOT2](BOARD).0.gpio.030.out
 net output04 => hm2_[HOSTMOT2](BOARD).0.gpio.031.out
@@ -154,7 +154,7 @@ net input06 => motion.digital-in-00
 # output00 .... estop relay feedback to BF20 control panel
 
 # Signal "Machine is on" - Enable stepper drives
-net output01 <= halui.machine.is-on
+#net output01 <= halui.machine.is-on
 
 # M63-M64 user output (Indicator light)
 net output02 <= motion.digital-out-00

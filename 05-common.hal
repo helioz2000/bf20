@@ -1,0 +1,10 @@
+# #######################################
+#
+# HAL file for Common Signals
+# Erwin Bejsta - June 2020
+#
+# ########################################
+
+# Signals which are used in multiple hal files
+
+net common.machine.is-on <= halui.machine.is-on

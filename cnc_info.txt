@@ -5,10 +5,17 @@ G55 - non specific WCS, use for working
 G56 - X+Y position of Mill Vice, Z to be set to tool
 G59 - non specific WCS, use for working
 
+Macro5 (M-Home) G54
+Macro6 (Safe-Z) G55
+Macro7 (W-Home) G56
+
 M64/M65
   P0 = indicator light on operator module
 
 M66
   P0 = button on operator module
+
+Macro5 (M-Home) G54
+Macro6 (Safe-Z) G55
 
 
