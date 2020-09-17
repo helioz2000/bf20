@@ -1,0 +1,17 @@
+(filename tool-length-probe.ngc)
+(Erwin Bejsta - Sep 2020)
+o<tool-length-probe> sub
+  (g30 must be set to a position safely above the switch)
+  (only run after tool-length-reference has been executed) 
+  M70 (save modal state)
+  G21 G90 (mm absolute)
+  G49 (tool compensation off)
+  G53 G0 Z250 (safe position)
+  G30 (above switch)
+  G38.2 Z50 F200 (measure towards sensor)
+  G38.4 Z200 F5 (measure off sensore)
+  G53 G0 Z200 (clear switch)
+  M72 (restore save modal state)
+  G43.1 Z[#5063-#1000] (set new tool offset)
+  (print,new length is #5063)
+o<tool-length-probe> endsub

@@ -133,8 +133,9 @@ net input01_not => joint.0.home-sw-in
 net input02_not => joint.1.home-sw-in
 net input03_not => joint.2.home-sw-in
 
-# touch probe input
-net input04 => motion.probe-input
+# touch probe input (NC contact)
+#net input04 => motion.probe-input
+net input04_not => motion.probe-input
 
 # Unused input
 #net input05 =>

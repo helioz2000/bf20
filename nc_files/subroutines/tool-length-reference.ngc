@@ -1,0 +1,18 @@
+(filename tool-length-reference.ngc)
+(Erwin Bejsta - Sep 2020)
+o<tool-length-reference> sub
+  (to be called with reference tool installed)
+  (Tool length sensor is located at G30)
+  (G30 must be set to safe position above the switch)
+  M73 (save modal state, auto restore on exit)
+  G21 G90 (mm absolute) 
+  G49 (compensation off)
+  G53 G0 Z250 (Z safe position)
+  (measure reference tool)
+  G30 (move above switch)
+  G38.2 Z50 F200 (find switch)
+  G38.4 Z200 F5 (measure off the switch)
+  G53 G0 Z200 (Z safe)
+  #1000=#5063 (save reference tool length)
+  (print,reference length is #1000)
+o<tool-length-reference> endsub
