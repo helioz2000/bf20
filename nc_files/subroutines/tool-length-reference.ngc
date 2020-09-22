@@ -5,6 +5,7 @@ o<tool-length-reference> sub
   (Tool length sensor is located at G30)
   (G30 must be set to safe position above the switch)
   M73 (save modal state, auto restore on exit)
+  G54 (WCS with no offset)
   G21 G90 (mm absolute) 
   G49 (compensation off)
   G53 G0 Z250 (Z safe position)

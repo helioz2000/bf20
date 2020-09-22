@@ -1,0 +1,43 @@
+%
+( DRILL )
+( Y Bed Plate Rev2 )
+( OPTIMUM BF20 EB )
+( Erwin Bejsta, Sep 2020 )
+( ---------- )
+
+( Global Parameters )
+#<_drillfeedrate> = 80
+#<_drillstart> = 1.5
+#<_drillend> = -16
+#<_drillpeck> = 2.0
+#<_zclearance> = 10
+
+(Drill subroutine)
+o100 sub
+  G0 Z#<_zclearance>
+  G0 X#1 Y#2
+  O<wait-for-button> call
+  F#<_drillfeedrate>
+  ( Standard drilling - continous )
+  (G90 G98 G81 X#1 Y#2 Z#<_drillend> R#<_drillstart>)
+  ( Peck drilling - chip breaking)
+  G90 G98 G83 X#1 Y#2 Z#<_drillend> R#<_drillstart> Q#<_drillpeck>
+o100 endsub
+
+G56 (WCS selection)
+G94 (feed in mm/min)
+G90 (absolute distance mode)
+G17 (XY plane)
+G0 Z50 (Z clearance height)
+o100 call [10] [-10]
+o100 call [20] [-10]
+o100 call [70] [-10]
+o100 call [80] [-10]
+o100 call [75] [-53]
+o100 call [70] [-45]
+o100 call [45] [-45]
+o100 call [20] [-45]
+o100 call [15] [-53]
+G0 G53 Z275 (clearance for tool change)
+M30
+%

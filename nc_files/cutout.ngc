@@ -1,0 +1,22 @@
+
+( Parameters )
+#<cutterdia> = 3.8
+#<zclearance> = 20
+#<depth> = -5.5
+g21 g56 g17 g90
+G40 (cancel cutter comp)
+f60
+G56
+G0 Z#<zclearance>
+G0 X-5 Y-35
+G0 Z#<depth>
+G42.1 D#<cutterdia>
+G1 X-6 Y-28
+G1 X35 Y-28
+G1 X35 Y-62
+G1 X-6.5 Y-62
+(G1 X-6.5 Y-40)
+G40 (cancel cutter comp)
+G0 Z0
+G0 X-10 Y-45
+m2

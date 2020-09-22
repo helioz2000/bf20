@@ -4,6 +4,7 @@ o<tool-length-probe> sub
   (g30 must be set to a position safely above the switch)
   (only run after tool-length-reference has been executed) 
   M70 (save modal state)
+  G54 (WCS with no offset)
   G21 G90 (mm absolute)
   G49 (tool compensation off)
   G53 G0 Z250 (safe position)
