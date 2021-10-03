@@ -1,18 +1,17 @@
-; tool table - max 56 entries 
-T1 P1 X0 Y0 Z0 D3.0 ;centre drill (all sizes)
-T2 P2 X0 Y0 Z0 D2.0 ;2mm end mill
-T3 P3 X0 Y0 Z0 D3.0 ;3mm end mill
-T4 P4 X0 Y0 Z0 D4.0 ;4mm end mill
-T5 P5 X0 Y0 Z0 D5.0 ;5mm end mill
-T6 P6 X0 Y0 Z0 D6.0 ;6mm end mill
-T8 P8 X0 Y0 Z0 D7.0 ;8mm end mill
-T10 P10 X0 Y0 Z0 D10.0 ;10mm end mill 
-T12 P12 X0 Y0 Z0 D12.0 ;12mm end mill
-T21 P21 X0 Y0 Z0 D1.0 ;1mm ball nose mill
-T22 P22 X0 Y0 Z0 D3.0 ;2mm ball nose mill
-T23 P23 X0 Y0 Z0 D3.0 ;3mm ball nose mill
-T24 P24 X0 Y0 Z0 D4.0 ;4mm ball nose mill
-T25 P25 X0 Y0 Z0 D5.0 ;5mm ball nose mill
-T26 P26 X0 Y0 Z0 D6.0 ;6mm ball nose mill
-T50 P50 X0 Y0 Z0 D50.0 ;50mm face mill
+T1 P1 D3.000000 ;centre drill (all sizes)
+T2 P2 D2.000000 ;2mm end mill
+T3 P3 D3.000000 ;3mm end mill
+T4 P4 D4.000000 ;4mm end mill
+T5 P5 D5.000000 ;5mm end mill
+T6 P6 D6.000000 ;6mm end mill
+T8 P8 D7.000000 ;8mm end mill
+T10 P10 D10.000000 X+0.690669 ;10mm end mill 
+T12 P12 D12.000000 ;12mm end mill
+T21 P21 D1.000000 ;1mm ball nose mill
+T22 P22 D3.000000 ;2mm ball nose mill
+T23 P23 D3.000000 ;3mm ball nose mill
+T24 P24 D4.000000 ;4mm ball nose mill
+T25 P25 D5.000000 ;5mm ball nose mill
+T26 P26 D6.000000 ;6mm ball nose mill
+T50 P50 D50.000000 ;50mm face mill
 T99999 P99999 Z+0.100000 ;big tool number
